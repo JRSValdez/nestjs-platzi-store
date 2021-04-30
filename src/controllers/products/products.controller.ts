@@ -8,6 +8,8 @@ import {
   Put,
   Delete,
 } from '@nestjs/common';
+import { CustomParseIntPipe } from 'src/common/custom-parse-int.pipe';
+import { CreateProductDTO, UpdateProductDTO } from 'src/dtos/products.dtos';
 import { ProductsService } from '../../services/products/products.service';
 
 @Controller('products')
@@ -31,25 +33,28 @@ export class ProductsController {
   }
 
   @Get(':id')
-  getProduct(@Param('id') id: number) {
-    return this.productService.findOne(+id);
+  getProduct(@Param('id', CustomParseIntPipe) id: number) {
+    return this.productService.findOne(id);
   }
 
   //POSTs
   @Post()
-  create(@Body() body: any) {
+  create(@Body() body: CreateProductDTO) {
     return this.productService.create(body);
   }
 
   //PUT
   @Put(':id')
-  update(@Param('id') id: number, @Body() body: any) {
-    return this.productService.update(+id, body);
+  update(
+    @Param('id', CustomParseIntPipe) id: number,
+    @Body() body: UpdateProductDTO,
+  ) {
+    return this.productService.update(id, body);
   }
 
   //DELETE
   @Delete(':id')
-  delete(@Param('id') id: number) {
-    return this.productService.delete(+id);
+  delete(@Param('id', CustomParseIntPipe) id: number) {
+    return this.productService.delete(id);
   }
 }
