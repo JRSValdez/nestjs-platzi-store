@@ -8,17 +8,19 @@ import {
   Put,
   Delete,
 } from '@nestjs/common';
+import { ProductsService } from '../../services/products/products.service';
 
 @Controller('products')
 export class ProductsController {
+  constructor(private productService: ProductsService) {}
+
   //GETS
   @Get()
-  getProducts(
-    @Query('limit') limit = 100,
-    @Query('offset') offset = 0,
-    @Query('productId') productId: number,
-  ) {
-    return { message: `limit ${limit} offset ${offset} product ${productId}` };
+  getProducts(@Query('limit') limit = 100, @Query('offset') offset = 0) {
+    return {
+      message: `limit ${limit} offset ${offset}`,
+      data: this.productService.findAll(),
+    };
   }
 
   //rutas staticas van primero, depues las dinamicas
@@ -29,34 +31,25 @@ export class ProductsController {
   }
 
   @Get(':id')
-  getProduct(@Param() params: any) {
-    return { message: `Product requested ${params.id}` };
+  getProduct(@Param('id') id: number) {
+    return this.productService.findOne(+id);
   }
 
   //POSTs
   @Post()
   create(@Body() body: any) {
-    return {
-      success: true,
-      product: body,
-    };
+    return this.productService.create(body);
   }
 
   //PUT
   @Put(':id')
-  update(@Body() body: any) {
-    return {
-      success: true,
-      product: body,
-    };
+  update(@Param('id') id: number, @Body() body: any) {
+    return this.productService.update(+id, body);
   }
 
   //DELETE
   @Delete(':id')
   delete(@Param('id') id: number) {
-    return {
-      success: true,
-      data: id,
-    };
+    return this.productService.delete(+id);
   }
 }
